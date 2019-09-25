@@ -254,22 +254,19 @@ class WebSocketHandler(StreamRequestHandler):
         their usage cases are limited - when we don't know the payload length.
         """
 
+
         # Validate message
         if isinstance(message, bytes):
-            message = try_decode_UTF8(message)  # this is slower but ensures we have UTF-8
-            if not message:
-                logger.warning("Can\'t send message, message is not valid UTF-8")
-                return False
-        elif sys.version_info < (3,0) and (isinstance(message, str) or isinstance(message, unicode)):
-            pass
+            OPCODE_TEXT = 0x02
+            payload = message
         elif isinstance(message, str):
-            pass
+            OPCODE_TEXT = 0x01
+            payload = encode_to_UTF8(message)
         else:
-            logger.warning('Can\'t send message, message has to be a string or bytes. Given type is %s' % type(message))
+            logger.warning("[!] Can't send message, message has to be a string or bytes. Given type is {}".format(type(message)))
             return False
 
-        header  = bytearray()
-        payload = encode_to_UTF8(message)
+        header = bytearray()
         payload_length = len(payload)
 
         # Normal payload

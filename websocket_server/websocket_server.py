@@ -257,10 +257,10 @@ class WebSocketHandler(StreamRequestHandler):
 
         # Validate message
         if isinstance(message, bytes):
-            OPCODE_TEXT = 0x02
+            opcode = OPCODE_BINARY
             payload = message
         elif isinstance(message, str):
-            OPCODE_TEXT = 0x01
+            opcode = OPCODE_TEXT
             payload = encode_to_UTF8(message)
         else:
             logger.warning("[!] Can't send message, message has to be a string or bytes. Given type is {}".format(type(message)))
